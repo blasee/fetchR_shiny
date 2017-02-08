@@ -1,0 +1,25 @@
+---
+title: "A shiny version of fetchR"
+author: "Blake Seers"
+date: "9 February 2017"
+output: md_document
+---
+
+This is the repo for a shiny version of the [fetchR](https://github.com/blasee/fetchR) package.
+
+See the web application [here](https://blasee.shinyapps.io/fetchR_shiny/).
+
+You can run this application locally by installing the **shiny** package in R,
+and use the `runGitHub()` function:
+
+```{r, eval = FALSE}
+if (!require('shiny')) install.packages("shiny")
+shiny::runGitHub("blasee/fetchR_shiny")
+```
+
+Or you can clone or download this repository, and use the `runApp()` function:
+
+```{r, eval = FALSE}
+shiny::runApp("fetchR_shiny")
+```
+

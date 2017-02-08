@@ -44,9 +44,8 @@ shinyUI(fluidPage(
       
       conditionalPanel("input.submit > 0",
                        
-                       br(),
-                       br(),
                        hr(),
+                       helpText("Download the data in CSV, KML or KMZ format for use in other software."),
                        textInput("file_name", "Filename:", "my_fetch"),
                        radioButtons('format', 'File format', c('CSV', 'KML', 'KMZ'),
                                     inline = TRUE),
@@ -57,7 +56,22 @@ shinyUI(fluidPage(
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Plot", plotOutput("plot")),
+        tabPanel("Plot", plotOutput("plot"), 
+                 h3("What is fetch?"),
+                 HTML('<p>Fetch is the unobstructed length of water over which 
+wind can blow. It is also commonly used as a measure of wind and wave exposure 
+at coastal sites, whereby a large fetch in a certain direction results in a 
+higher exposure to wind and waves from that direction  (see the 
+                      <a href="http://en.wikipedia.org/wiki/Fetch_(geography)">associated wikipedia page</a>).</p>'),
+                 h3("How does this work?"),
+                 p("This web application calculates the fetch for any coastal 
+site around New Zealand using the",
+                   a("fetchR", href = "https://github.com/blasee/fetchR#calculate-average-fetch-for-any-coastal-area-around-new-zealand"), "R package. A coastal location is given in latitude and longitude coordinates, along with a maximum distance and the number of bearings to be calculated per 90 degrees (the default is to calculate 9 bearings per 90 degrees, or equivalently, one per 10 degrees). To calculate the fetch, the lat-lon coordinates are projected onto the", a("NZTM 2000 map projection", href = "http://www.linz.govt.nz/data/geodetic-system/datums-projections-and-heights/projections/new-zealand-transverse-mercator-2000"), "and the fetch is calculated for each requested direction."),
+                   
+                 p("The", strong("Plot"), "tab shows a plot of the vectors that were used in calculating the fetch for each bearing."),
+                 p("The", strong("Summary"), "tab gives a summary of the fetch for the coastal location, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."), 
+                 p("The", strong("Distances"), "tab contains the fetch length for each bearing vector that have gone into the fetch calculations, along with the lat-lon coordinates indicating the point at which they 'hit' land or reach their maximum distance.")
+                 ),
         tabPanel("Summary", tableOutput("summary")),
         tabPanel("Distances", tableOutput("distances"))
       )

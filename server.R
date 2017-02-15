@@ -43,9 +43,9 @@ shinyServer(function(input, output) {
   }, 
   rownames = TRUE, colnames = FALSE)
   
-  output$distances_1 = renderTable(dist.df)
+  output$distances_1 = renderDataTable(dist.df)
   
-  output$distances = renderTable({
+  output$distances = renderDataTable({
     xx.df = as(xx(), "data.frame")
     class(xx.df$direction) = "integer"
     xx.df

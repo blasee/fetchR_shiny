@@ -83,8 +83,8 @@ site around New Zealand using the",
                  tableOutput("summary")),
         tabPanel("Distances", 
                  conditionalPanel("input.submit < 1",
-                                  tableOutput("distances_1")),
-                 tableOutput("distances"))
+                                  dataTableOutput("distances_1")),
+                 dataTableOutput("distances"))
       )
     )
   )

@@ -43,13 +43,14 @@ shinyUI(fluidPage(
       actionButton("submit", "Calculate fetch"),
       
       hr(),
-      helpText("Download the data in CSV, KML or KMZ format for use in other software."),
+      helpText("Download the data in CSV or KML format for use in other software,
+               or reproduce it using a custom R script."),
       textInput("file_name", "Filename:", "my_fetch"),
-      radioButtons('format', 'File format', c('CSV', 'KML', 'KMZ'),
+      radioButtons('format', 'File format', c('CSV', 'KML', 'R'),
                    inline = TRUE),
       conditionalPanel("input.submit < 1",
                        downloadButton("dl_file_1")),
-      conditionalPanel("input.submit > 1",
+      conditionalPanel("input.submit > 0",
                      downloadButton("dl_file")),
       
       width = 3

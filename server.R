@@ -1,6 +1,55 @@
 library(fetchR)
 library(sp)
 
+fetch_r_file = function(lat, lon, max_dist, bearings, fn){
+  cat("# This file was created by the fetchR_shiny web application:
+# https://blasee.shinyapps.io/fetchR_shiny/
+
+# If there is a problem with this file, you can submit an issue here:
+# https://github.com/blasee/fetchR_shiny/issues/new
+
+# Install and load packages -----------------------------------------------
+      
+# Install the devtools package, if not already installed
+if(!require(devtools))
+  install.packages('devtools')
+      
+# Install the latest version of the fetchR package from GitHub
+devtools::install_github('blasee/fetchR')
+      
+# Load the fetchR package
+library(fetchR)
+      
+# Calculate Fetch ---------------------------------------------------------
+      
+# Latitude:         ", lat, "
+# Longitude:        ", lon, "
+# Maximum distance: ", max_dist, "km
+# Bearings per 90°:   ", bearings, "
+      
+my_fetch = fetch(", lat, ", ", lon, ", ", max_dist, ", ", bearings, ")
+      
+# Plot in R ---------------------------------------------------------------
+      
+plot(my_fetch, col = 'red')
+      
+# Output to KML -----------------------------------------------------------
+      
+# This requires the plotKML package
+if (!require(plotKML))
+  install.packages('plotKML')
+      
+# Create some labels indicating the directions (TOWARDS)
+labs = sapply(slot(my_fetch, 'lines'), slot, 'ID')
+      
+# Check your current directory
+getwd()
+      
+# Save 'my_fetch.kml' to the current directory
+plotKML::kml(my_fetch, labels = as.numeric(labs))",
+sep = "", file = fn)
+}
+
 load("data/init.RData")
 
 shinyServer(function(input, output) {
@@ -57,14 +106,15 @@ shinyServer(function(input, output) {
              switch(input$format,
                     CSV = ".csv", 
                     KML = ".kml", 
-                    KMZ = ".kmz"
+                    R = ".R"
                     ))
     },
     content = function(file){
       switch(input$format,
              CSV = write.csv(dist.df, file, row.names = FALSE),
              KML = plotKML::kml(init_fetch_obj, file.name = file),
-             KMZ = plotKML::kml(init_fetch_obj, file.name = file, kmz = TRUE))
+             R = fetch_r_file(input$lat, input$lon, 
+                              input$dist, input$n_bearings, file))
     }
   )
   
@@ -72,14 +122,17 @@ shinyServer(function(input, output) {
     filename = function(){
       paste0(strsplit(input$file_name, ".", fixed = TRUE)[[1]][1], 
              switch(input$format, 
-                    CSV = ".csv", KML = ".kml", KMZ = ".kmz"
+                    CSV = ".csv", 
+                    KML = ".kml", 
+                    R = ".R"
       ))
     },
     content = function(file){
       switch(input$format,
              CSV = write.csv(as(xx(), "data.frame"), file, row.names = FALSE),
              KML = plotKML::kml(xx(), file.name = file),
-             KMZ = plotKML::kml(xx(), file.name = file, kmz = TRUE))
+             R = fetch_r_file(input$lat, input$lon, 
+                              input$dist, input$n_bearings, file))
     }
   )
 })

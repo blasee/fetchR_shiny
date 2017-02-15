@@ -42,21 +42,26 @@ shinyUI(fluidPage(
       
       actionButton("submit", "Calculate fetch"),
       
-      conditionalPanel("input.submit > 0",
-                       
-                       hr(),
-                       helpText("Download the data in CSV, KML or KMZ format for use in other software."),
-                       textInput("file_name", "Filename:", "my_fetch"),
-                       radioButtons('format', 'File format', c('CSV', 'KML', 'KMZ'),
-                                    inline = TRUE),
-                       downloadButton("dl_file")),
+      hr(),
+      helpText("Download the data in CSV, KML or KMZ format for use in other software."),
+      textInput("file_name", "Filename:", "my_fetch"),
+      radioButtons('format', 'File format', c('CSV', 'KML', 'KMZ'),
+                   inline = TRUE),
+      conditionalPanel("input.submit < 1",
+                       downloadButton("dl_file_1")),
+      conditionalPanel("input.submit > 1",
+                     downloadButton("dl_file")),
       
       width = 3
     ),
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Plot", plotOutput("plot"), 
+        tabPanel("Plot", 
+                 conditionalPanel("input.submit < 1",
+                                  plotOutput("plot_1")),
+                 conditionalPanel("input.submit > 0",
+                                  plotOutput("plot")),
                  h3("What is fetch?"),
                  HTML('<p>Fetch is the unobstructed length of water over which 
 wind can blow. It is also commonly used as a measure of wind and wave exposure 
@@ -72,8 +77,14 @@ site around New Zealand using the",
                  p("The", strong("Summary"), "tab gives a summary of the fetch for the coastal location, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."), 
                  p("The", strong("Distances"), "tab contains the fetch length for each bearing vector that have gone into the fetch calculations, along with the lat-lon coordinates indicating the point at which they 'hit' land or reach their maximum distance.")
                  ),
-        tabPanel("Summary", tableOutput("summary")),
-        tabPanel("Distances", tableOutput("distances"))
+        tabPanel("Summary", 
+                 conditionalPanel("input.submit < 1",
+                                  tableOutput("summary_1")),
+                 tableOutput("summary")),
+        tabPanel("Distances", 
+                 conditionalPanel("input.submit < 1",
+                                  tableOutput("distances_1")),
+                 tableOutput("distances"))
       )
     )
   )

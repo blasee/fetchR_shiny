@@ -1,6 +1,8 @@
 library(fetchR)
 library(sp)
 
+load("data/init.RData")
+
 shinyServer(function(input, output) {
   
   xx = eventReactive(input$submit, {
@@ -10,9 +12,16 @@ shinyServer(function(input, output) {
              n_bearings = input$n_bearings)
     })
   
+  output$plot_1 = renderPlot({
+    plot(init_fetch_obj, col = "red")
+  })
+  
   output$plot = renderPlot({
     plot(xx(), col = "red")
     })
+  
+  output$summary_1 = renderTable(my_fetch.df,
+                                 rownames = TRUE, colnames = FALSE)
   
   output$summary = renderTable({
     angles = as.numeric(sapply(slot(xx(), "lines"), slot, "ID"))
@@ -34,11 +43,30 @@ shinyServer(function(input, output) {
   }, 
   rownames = TRUE, colnames = FALSE)
   
+  output$distances_1 = renderTable(dist.df)
+  
   output$distances = renderTable({
     xx.df = as(xx(), "data.frame")
     class(xx.df$direction) = "integer"
     xx.df
   })
+  
+  output$dl_file_1 = downloadHandler(
+    filename = function(){
+      paste0(strsplit(input$file_name, ".", fixed = TRUE)[[1]][1],
+             switch(input$format,
+                    CSV = ".csv", 
+                    KML = ".kml", 
+                    KMZ = ".kmz"
+                    ))
+    },
+    content = function(file){
+      switch(input$format,
+             CSV = write.csv(dist.df, file, row.names = FALSE),
+             KML = plotKML::kml(init_fetch_obj, file.name = file),
+             KMZ = plotKML::kml(init_fetch_obj, file.name = file, kmz = TRUE))
+    }
+  )
   
   output$dl_file = downloadHandler(
     filename = function(){
@@ -48,15 +76,10 @@ shinyServer(function(input, output) {
       ))
     },
     content = function(file){
-      # labels = sapply(slot(xx(), "lines"), slot, "ID")
       switch(input$format,
              CSV = write.csv(as(xx(), "data.frame"), file, row.names = FALSE),
              KML = plotKML::kml(xx(), file.name = file),
              KMZ = plotKML::kml(xx(), file.name = file, kmz = TRUE))
-    }#,
-    # contentType = switch(input$format,
-    #                      CSV = "text/csv",
-    #                      KML = ,
-    #                      KMZ = "application/vnd.google-earth.kml+xml")
+    }
   )
 })

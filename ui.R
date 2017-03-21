@@ -1,28 +1,24 @@
 shinyUI(fluidPage(
+  shinyjs::useShinyjs(),
   
-  titlePanel("Calculate wind fetch in New Zealand"),
+  titlePanel("Calculate Wind Fetch"),
   br(),
   
   sidebarLayout(
     
     sidebarPanel(
       
-      numericInput("lat", 
-                   label = "Latitude", 
-                   value = -36.40,
-                   min = -52,
-                   max = -30,
-                   step = .01,
-                   width = '300px'),
-      
-      numericInput("lon",
-                   label = "Longitude",
-                   value = 174.80,
-                   min = 166,
-                   max = 183,
-                   step = .01,
-                   width = '300px'),
-      
+      helpText("1) Upload a polygon shapefile. Each polygon represents a coastline boundary, island or other obstruction to wind."),
+      fileInput('polygon_shape', 'Upload polygon shapefile',
+                accept=c(".shp",".dbf",".sbn",".sbx",".shx",".prj"),
+                multiple = TRUE, width = "100%"),
+
+      helpText("2) Upload a points shapefile. Each point represents the location(s) at which the wind fetch will be calculated."),
+      fileInput('point_shape', 'Upload points shapefile',
+                accept=c(".shp",".dbf",".sbn",".sbx",".shx",".prj"),
+                multiple = TRUE, width = "100%"),
+
+      helpText("3) Set the maximum distance for all fetch vectors."),
       numericInput("dist",
                    label = "Maximum distance (km)",
                    value = 300,
@@ -31,60 +27,52 @@ shinyUI(fluidPage(
                    step = 50,
                    width = '300px'),
       
-      numericInput("n_bearings",
-                   label = "Bearings per quadrant",
+      helpText("4) Set the number of directions to calculate per 90°"),
+      numericInput("n_dirs",
+                   label = "Directions per quadrant",
                    value = 9,
                    min = 1,
-                   max = 90,
+                   max = 20,
                    step = 1,
                    width = '300px'),
       br(),
       
+      helpText("5) Calculate wind fetch!"),
       actionButton("submit", "Calculate fetch"),
       
-      hr(),
-      helpText("Download the data in CSV or KML format for use in other software,
-               or reproduce it using a custom R script."),
-      textInput("file_name", "Filename:", "my_fetch"),
-      radioButtons('format', 'File format', c('CSV', 'KML', 'R'),
-                   inline = TRUE),
-      conditionalPanel("input.submit < 1",
-                       downloadButton("dl_file_1")),
       conditionalPanel("input.submit > 0",
-                     downloadButton("dl_file")),
+                       hr(),
+                       helpText("Download the data in CSV or KML format for use in other software,
+               or reproduce it using a custom R script."),
+                       textInput("file_name", "Filename:", "my_fetch"),
+                       radioButtons('format', 'File format', c('CSV', 'KML', 'R'),
+                                    inline = TRUE),
+                       hr(),
+                       downloadButton("dl_file")),
       
       width = 3
     ),
     
     mainPanel(
       tabsetPanel(
-        tabPanel("Plot", 
-                 conditionalPanel("input.submit < 1",
-                                  plotOutput("plot_1")),
-                 conditionalPanel("input.submit > 0",
-                                  plotOutput("plot")),
-                 h3("What is fetch?"),
-                 HTML('<p>Fetch is the unobstructed length of water over which 
-wind can blow. It is also commonly used as a measure of wind and wave exposure 
-at coastal sites, whereby a large fetch in a certain direction results in a 
-higher exposure to wind and waves from that direction  (see the 
-                      <a href="http://en.wikipedia.org/wiki/Fetch_(geography)">associated wikipedia page</a>).</p>'),
-                 h3("How does this work?"),
-                 p("This web application calculates the fetch for any coastal 
-site around New Zealand using the",
-                   a("fetchR", href = "https://github.com/blasee/fetchR#calculate-average-fetch-for-any-coastal-area-around-new-zealand"), "R package. A coastal location is given in latitude and longitude coordinates, along with a maximum distance and the number of bearings to be calculated per 90 degrees (the default is to calculate 9 bearings per 90 degrees, or equivalently, one per 10 degrees). To calculate the fetch, the lat-lon coordinates are projected onto the", a("NZTM 2000 map projection", href = "http://www.linz.govt.nz/data/geodetic-system/datums-projections-and-heights/projections/new-zealand-transverse-mercator-2000"), "and the fetch is calculated for each requested direction."),
-                   
-                 p("The", strong("Plot"), "tab shows a plot of the vectors that were used in calculating the fetch for each bearing."),
-                 p("The", strong("Summary"), "tab gives a summary of the fetch for the coastal location, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."), 
-                 p("The", strong("Distances"), "tab contains the fetch length for each bearing vector that have gone into the fetch calculations, along with the lat-lon coordinates indicating the point at which they 'hit' land or reach their maximum distance.")
+        tabPanel("Home",
+                 plotOutput("polygon_map"),
+                 h4("How does this application work?"),
+                 p("This web application calculates the wind fetch for any marine site around the world using the",
+                   a("fetchR", href = "https://cran.r-project.org/package=fetchR"), 
+                   "R package. Simply upload your polygon shapefiles (representing the coastlines etc.), and your points shapefiles (indicating where fetch is to be calculated), and then calculate the fetch! See the", a("README", href = "https://github.com/blasee/fetchR_shiny"), "for more details and a reproducible example using this application."),
+                 
+                 p("This", strong("Home"), "tab plots the extent of the polygon shapefile, and the locations at which the wind fetch are to be calculated, once the shapefiles have been uploaded successfully."),
+                 p("The", strong("Plot"), "tab shows a plot of the vectors that were used in calculating the fetch for each bearing, at each site."),
+                 p("The", strong("Summary"), "tab gives a summary of the fetch for the coastal locations, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."),
+                 p("The", strong("Distances"), "tab contains the fetch length for each vector that has gone into the fetch calculations, along with the latitude and longitude coordinates.")
                  ),
+        tabPanel("Plot",
+                 plotOutput("fetch_plot",
+                            height = "800px")),
         tabPanel("Summary", 
-                 conditionalPanel("input.submit < 1",
-                                  tableOutput("summary_1")),
                  tableOutput("summary")),
-        tabPanel("Distances", 
-                 conditionalPanel("input.submit < 1",
-                                  dataTableOutput("distances_1")),
+        tabPanel("Distances",
                  dataTableOutput("distances"))
       )
     )

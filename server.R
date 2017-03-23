@@ -39,7 +39,7 @@ my_fetch
 # Raw data ----------------------------------------------------------------
 
 # Transform "my_fetch" to have lon/lat coordinates
-my_fetch_latlon = spTransform(my_fetch, CRS("+init=epsg:4326))
+my_fetch_latlon = spTransform(my_fetch, sp::CRS("+init=epsg:4326"))
 
 # Create a data frame containing the raw data
 my_fetch.df = as(my_fetch_latlon, "data.frame")

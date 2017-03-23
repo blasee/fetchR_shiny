@@ -94,18 +94,30 @@ Set the required maximum distance (km) and number of equiangular directions to c
 
 Finally, calculate fetch! Navigate through the various tabs to see the fetch vectors, a summary of the wind exposure, and a table containing the raw data (in longitude / latitude coordinates). Once the calculations are completed, the web application allows the user to export the raw data as a CSV file, download a KML, or reproduce the results with a custom **R** file.
 
-Citation
-========
+### Download a project directory
+
+If the custom **R** file is chosen for download, the web application creates a project directory (ZIP) with the required files (including the shapefiles), so that the custom R script can be sourced and run without any modifications to the code.
+
+![](./figures/project_directory.png)
+
+To reproduce the calculations locally, unzip the contents of the directory and `source` the **R** file in R:
 
 ``` r
-citation("fetchR")
+if (interactive())
+  # Navigate to the Calculate_wind_fetch/R/calculate_fetch.R file
+  source(file.choose(), chdir = TRUE)
 ```
+
+This will automatically run the `fetch` function and output all the relevant CSV, KML and PNG files into their respective directories. See the README file in the parent directory for more information.
+
+Citation
+========
 
     ## 
     ## To cite package 'fetchR' in publications use:
     ## 
     ##   Blake Seers (2017). fetchR: Calculate Wind Fetch in R. R package
-    ##   version 2.0-0. https://CRAN.R-project.org/package=fetchR
+    ##   version 2.0-1-999. https://cran.r-project.org/package=fetchR
     ## 
     ## A BibTeX entry for LaTeX users is
     ## 
@@ -113,8 +125,8 @@ citation("fetchR")
     ##     title = {fetchR: Calculate Wind Fetch in R},
     ##     author = {Blake Seers},
     ##     year = {2017},
-    ##     note = {R package version 2.0-0},
-    ##     url = {https://CRAN.R-project.org/package=fetchR},
+    ##     note = {R package version 2.0-1-999},
+    ##     url = {https://cran.r-project.org/package=fetchR},
     ##   }
 
 [1] This requires a (free) [registration to the LINZ Data Service](https://data.linz.govt.nz/accounts/register/) and acceptance of the [terms of conditions](https://data.linz.govt.nz/terms-of-use/) and [privacy policy](https://data.linz.govt.nz/privacy-policy/). The data sourced from Land Information New Zealand has not been adapted and is protected under CC-By Land Information New Zealand.

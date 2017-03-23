@@ -106,9 +106,31 @@ vectors, a summary of the wind exposure, and a table containing the raw data
 the web application allows the user to export the raw data as a CSV file, 
 download a KML, or reproduce the results with a custom **R** file.
 
+### Download a project directory
+
+If the custom **R** file is chosen for download, the web application creates a
+project directory (ZIP) with the required files (including the shapefiles), so 
+that the custom R script can be sourced and run without any modifications to the 
+code. 
+
+![](./figures/project_directory.png)
+
+To reproduce the calculations locally, unzip the contents of the directory and 
+`source` the **R** file in R:
+
+```{r, eval = FALSE}
+if (interactive())
+  # Navigate to the Calculate_wind_fetch/R/calculate_fetch.R file
+  source(file.choose(), chdir = TRUE)
+```
+
+This will automatically run the `fetch` function and output all the relevant 
+CSV, KML and PNG files into their respective directories. See the README file
+in the parent directory for more information.
+
 # Citation
 
-```{r}
+```{r, echo = FALSE}
 citation("fetchR")
 ```
 

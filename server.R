@@ -153,11 +153,19 @@ shinyServer(function(input, output) {
                       input$n_dirs > 0),
                   "Directions per quadrant: please choose a number between 1 and 20."))
     
-    my_fetch = fetch(poly_layer,
-                     point_layer,
-                     max_dist = input$dist,
-                     n_directions = input$n_dirs,
-                     quiet = TRUE)
+    withCallingHandlers({
+      shinyjs::html("text", "")
+      my_fetch = fetch(poly_layer,
+                       point_layer,
+                       max_dist = input$dist,
+                       n_directions = input$n_dirs,
+                       quiet = TRUE)
+      message("")
+    },
+    message = function(m){
+      emph_text = paste0("<strong>", m$message, "</strong>")
+      shinyjs::html(id = "text", html = emph_text)
+    })
     
     list(my_fetch = my_fetch,
          my_fetch_latlon = spTransform(my_fetch, CRS("+init=epsg:4326")))

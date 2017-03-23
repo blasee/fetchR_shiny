@@ -39,6 +39,7 @@ shinyUI(fluidPage(
 
       helpText("5) Calculate wind fetch!"),
       actionButton("submit", "Calculate fetch"),
+      textOutput("text"),
 
       conditionalPanel("input.submit > 0",
                        hr(),

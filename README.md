@@ -1,33 +1,19 @@
-Calculate wind fetch: The shiny version
-=======================================
+Wind fetch
+----------
 
-The [**fetchR**](https://github.com/blasee/fetchR) package is designed to calculate fetch lengths at locations anywhere on Earth, using **R**. This shiny version of **fetchR** allows users to make these calculations *without* requiring **R** by using the [online web application](https://blasee.shinyapps.io/fetchR_shiny/).
+Wind fetch is an important measurement in coastal applications. It provides a measurement for the unobstructed length of water over which wind from a certain direction can blow over. The higher the wind fetch from a certain direction, the more energy is imparted onto the surface of the water resulting in a larger sea state. Therefore, the larger the fetch, the larger the exposure to wind and the more likely the site experiences larger sea states.
 
-Deploy this application locally
--------------------------------
+Simplifying fetch calculations
+------------------------------
 
-You can run this application locally by installing the **shiny** package, and use the `runGitHub()` function:
+Averaging the wind fetch for numerous directions at the same location is a reasonable measure of the overall wind exposure. This process of calculating wind fetch can be extremely time-consuming and tedious, particularly if a large number of fetch vectors are required at many locations. The [**fetchR**](https://github.com/blasee/fetchR) package is designed to calculate fetch lengths at locations anywhere on Earth, using **R**. This application uses the **fetchR** package but allows users to calculate fetch *without* **R**.
 
-``` r
-if (!require('shiny')) 
-  install.packages("shiny")
+How to use this application
+---------------------------
 
-shiny::runGitHub("blasee/fetchR_shiny")
-```
+This [**fetchR**](https://github.com/blasee/fetchR) application requires two shapefiles; one for the coastlines and other boundaries, and one for the locations at which to calculate wind fetch. The following example details the steps required for calculating fetch with a reproducible example using data from the [Land Information New Zealand (LINZ) Data Service](https://data.linz.govt.nz/)[1].
 
-Or you can clone or download this repository, and use the `runApp()` function:
-
-``` r
-shiny::runApp("fetchR_shiny")
-```
-
-How to use the **fetchR** web application
-=========================================
-
-The [**fetchR**](https://github.com/blasee/fetchR) web application requires two shapefiles; one for the coastlines and other boundaries, and one for the locations at which to calculate wind fetch. The following example details the steps required for calculating fetch with a reproducible example using data from the [Land Information New Zealand (LINZ) Data Service](https://data.linz.govt.nz/)[1].
-
-1) Upload a polygon shapefile to the application
-------------------------------------------------
+### 1) Upload a polygon shapefile to the application
 
 This shapefile must:
 
@@ -38,8 +24,7 @@ As an example, download the [high resolution New Zealand coastlines and islands 
 
 ![](./figures/upload_poly.png)
 
-2) Upload a points shapefile
-----------------------------
+### 2) Upload a points shapefile
 
 This shapefile must:
 
@@ -47,7 +32,7 @@ This shapefile must:
 
 Every point represents a location at which the wind fetch will be calculated. This shapefile can be created from any GIS software, or directly within **R**.
 
-### Create an ESRI shapefile in **R**
+#### Create an ESRI shapefile in **R**
 
 As a example, create an ESRI Point shapefile in **R** for three locations around coastal New Zealand.
 
@@ -87,20 +72,23 @@ These files can now be uploaded to the web application.
 
 While the polygon layer requires a map projection, this is not a requirement for the point layer. If the point layer is not projected, it is automatically transformed to have the same map projection as the polygon layer before any wind fetch calculations take place.
 
-3) Set maximum distance and number of directions
-------------------------------------------------
+### 3) Set maximum distance and number of directions
 
 Set the required maximum distance (km) and number of equiangular directions to calculate per quadrant (i.e. per 90 degrees). The default is to calculate the wind fetch for 9 directions per 90 degrees, or; one fetch vector for every 10 degrees of angular separation.
 
-Finally, calculate fetch! Navigate through the various tabs to see the fetch vectors, a summary of the wind exposure, and a table containing the raw data (in longitude / latitude coordinates). Once the calculations are completed, the web application allows the user to export the raw data as a CSV file, download a KML, or reproduce the results with a custom **R** file.
+### 4) Calculate fetch!
 
-### Download a project directory
+Finally, calculate fetch!
+
+Navigate through the various tabs to see the fetch vectors, a summary of the wind exposure, and a table containing the raw data (in longitude / latitude coordinates). Once the calculations are completed, the web application allows the user to export the raw data as a CSV file, download a KML, or reproduce the results with a custom **R** file.
+
+#### Download a project directory
 
 If the custom **R** file is chosen for download, the web application creates a project directory (ZIP) with the required files (including the shapefiles), so that the custom R script can be sourced and run without any modifications to the code.
 
 ![](./figures/project_directory.png)
 
-To reproduce the calculations locally, unzip the contents of the directory and `source` the **R** file in R:
+To reproduce the calculations locally, unzip the contents of the directory and `source` the `calculate_fetch.R` **R** file:
 
 ``` r
 if (interactive())
@@ -108,16 +96,33 @@ if (interactive())
   source(file.choose(), chdir = TRUE)
 ```
 
-This will automatically run the `fetch` function and output all the relevant CSV, KML and PNG files into their respective directories. See the README file in the parent directory for more information.
+This will automatically run the `fetch` function and output all the relevant CSV, KML and PNG files into their respective directories. See the `README` file in the parent directory for more information.
+
+### Deploy this application locally
+
+This application can be deployed locally by installing the **shiny** package, and using the `runGitHub()` function:
+
+``` r
+if (!require('shiny')) 
+  install.packages("shiny")
+
+shiny::runGitHub("blasee/fetchR_shiny")
+```
+
+Or you can clone or download the GitHub repository, and use the `runApp()` function:
+
+``` r
+shiny::runApp("fetchR_shiny")
+```
 
 Citation
-========
+--------
 
     ## 
     ## To cite package 'fetchR' in publications use:
     ## 
     ##   Blake Seers (2017). fetchR: Calculate Wind Fetch in R. R package
-    ##   version 2.0-1-999. https://cran.r-project.org/package=fetchR
+    ##   version 2.0-2. https://cran.r-project.org/package=fetchR
     ## 
     ## A BibTeX entry for LaTeX users is
     ## 
@@ -125,7 +130,7 @@ Citation
     ##     title = {fetchR: Calculate Wind Fetch in R},
     ##     author = {Blake Seers},
     ##     year = {2017},
-    ##     note = {R package version 2.0-1-999},
+    ##     note = {R package version 2.0-2},
     ##     url = {https://cran.r-project.org/package=fetchR},
     ##   }
 

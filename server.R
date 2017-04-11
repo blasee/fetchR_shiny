@@ -1,7 +1,3 @@
-library(fetchR)
-library(sp)
-library(rgdal)
-
 options(shiny.maxRequestSize = 50 * 1024^2)
 
 shinyServer(function(input, output) {
@@ -22,7 +18,7 @@ shinyServer(function(input, output) {
                {
                  if (all(!is.null(input$polygon_shape),
                          !is.null(input$point_shape))){
-                   shinyjs::enable("submit")
+                   enable("submit")
                    rvs$show_button = TRUE
                  }
                })
@@ -30,14 +26,14 @@ shinyServer(function(input, output) {
   observeEvent(rvs$show_button,
                {
                  if (rvs$show_button)
-                   shinyjs::enable("submit")
+                   enable("submit")
                  else
-                   shinyjs::disable("submit")
+                   disable("submit")
                })
 
   observeEvent(input$submit,
                {
-                 shinyjs::disable("submit")
+                 disable("submit")
                  calc_fetch()
                  rvs$show_button = FALSE
                })
@@ -65,7 +61,7 @@ shinyServer(function(input, output) {
 
     # New names for the files (matching the input names)
     outfiles = file.path(dir_name, inFile$name)
-    purrr::walk2(infiles, outfiles, ~file.rename(.x, .y))
+    walk2(infiles, outfiles, ~file.rename(.x, .y))
 
     x <- try(readOGR(dir_name, strsplit(inFile$name[1], "\\.")[[1]][1]), TRUE)
 
@@ -103,7 +99,7 @@ shinyServer(function(input, output) {
 
     # New names for the files (matching the input names)
     outfiles = file.path(dir_name, inFile$name)
-    purrr::walk2(infiles, outfiles, ~file.rename(.x, .y))
+    walk2(infiles, outfiles, ~file.rename(.x, .y))
 
     x <- try(readOGR(dir_name, strsplit(inFile$name[1], "\\.")[[1]][1]), TRUE)
 
@@ -116,45 +112,45 @@ shinyServer(function(input, output) {
   })
 
   output$polygon_map <- renderPlot({
-    
+
     poly_layer = polyShapeInput()$x
     point_layer = pointShapeInput()$x
-    
+
     if (is.null(input$polygon_shape) &
         input$submit == 0)
       return(NULL)
-    
+
     if (is.null(input$point_shape)){
-      
+
       plot(poly_layer, border = NA, col = "lightgrey")
-      
+
     } else {
-      
+
       # If both projected, test for the same map projections here...
-      
+
       if (all(is.projected(poly_layer),
               !is.projected(point_layer)))
         point_layer = spTransform(point_layer,
                                   CRS(proj4string(poly_layer)))
-      
+
       # Make sure there are no points on land here...
-      
+
       plot(point_layer, col = "red")
       plot(poly_layer, add = TRUE, border = NA, col = "lightgrey")
     }
   })
-  
+
   calc_fetch = eventReactive(input$submit, {
-    
+
     poly_layer = polyShapeInput()$x
     point_layer = pointShapeInput()$x
-    
+
     validate(need(all(input$n_dirs <= 20,
                       input$n_dirs > 0),
                   "Directions per quadrant: please choose a number between 1 and 20."))
-    
+
     withCallingHandlers({
-      shinyjs::html("text", "")
+      html("text", "")
       my_fetch = fetch(poly_layer,
                        point_layer,
                        max_dist = input$dist,
@@ -164,42 +160,42 @@ shinyServer(function(input, output) {
     },
     message = function(m){
       emph_text = paste0("<strong>", m$message, "</strong>")
-      shinyjs::html(id = "text", html = emph_text)
+      html(id = "text", html = emph_text)
     })
-    
+
     list(my_fetch = my_fetch,
          my_fetch_latlon = spTransform(my_fetch, CRS("+init=epsg:4326")))
   })
-  
+
   output$fetch_plot = renderPlot({
     plot(calc_fetch()$my_fetch, polyShapeInput()$x)
   })
-  
+
   output$summary = renderTable({
     poly_layer = polyShapeInput()$x
     point_layer = pointShapeInput()$x
-    
+
     if (is.null(input$polygon_shape) &
         input$submit == 0)
       return(NULL)
-    
+
     summary(calc_fetch()$my_fetch)
   },
   rownames = TRUE, colnames = TRUE)
-  
+
   output$distances = renderDataTable({
     poly_layer = polyShapeInput()$x
     point_layer = pointShapeInput()$x
-    
+
     if (is.null(input$polygon_shape) &
         input$submit == 0)
       return(NULL)
-    
+
     calc_fetch.df = as(calc_fetch()$my_fetch_latlon, "data.frame")
     class(calc_fetch.df$direction) = "integer"
     calc_fetch.df
   })
-  
+
   output$dl_file = downloadHandler(
     filename = function(){
       paste0(strsplit(input$file_name, ".", fixed = TRUE)[[1]][1],
@@ -212,7 +208,7 @@ shinyServer(function(input, output) {
     content = function(file){
       switch(input$format,
              CSV = write.csv(as(calc_fetch()$my_fetch_latlon, "data.frame"), file, row.names = FALSE),
-             KML = plotKML::kml(calc_fetch()$my_fetch_latlon, file.name = file),
+             KML = kml(calc_fetch()$my_fetch_latlon, file.name = file),
              R = create_zip(
                polyShapeInput()$x,
                pointShapeInput()$x,

@@ -1,5 +1,5 @@
 shinyUI(fluidPage(
-  shinyjs::useShinyjs(),
+  useShinyjs(),
 
   titlePanel("Calculate Wind Fetch"),
   br(),
@@ -67,7 +67,7 @@ shinyUI(fluidPage(
                  p("The", strong("Plot"), "tab shows a plot of the vectors that were used in calculating the fetch for each direction, at each site."),
                  p("The", strong("Summary"), "tab gives a summary of the wind fetch for each location, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."),
                  p("The", strong("Distances"), "tab contains the fetch length for each vector that has gone into the fetch calculations, along with the latitude and longitude coordinates."),
-                 p(strong("Please"), "don't forget to", a("cite the 'fetchR' package", href = "https://github.com/blasee/fetchR_shiny#citation"), "in publications.")
+                 p(strong("Please"), "don't forget to", a("cite the 'fetchR' package", href = "https://github.com/blasee/fetchR#citation"), "in publications.")
                  ),
         tabPanel("Plot",
                  plotOutput("fetch_plot",

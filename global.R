@@ -1,3 +1,10 @@
+library(shiny)
+library(shinyjs)
+library(fetchR)
+library(purrr)
+library(rgdal)
+library(plotKML)
+
 create_zip = function(poly_layer, point_layer, 
                       poly_layer_name, point_layer_name,
                       poly_dir_name, point_dir_name,
@@ -98,7 +105,8 @@ dev.off()
 
 # Output to KML -----------------------------------------------------------
 
-kml(my_fetch, folder.name = "Wind fetch", file.name = "../KML/wind_fetch.kml")
+plotKML::kml(my_fetch, folder.name = "Wind fetch", 
+             file.name = "../KML/wind_fetch.kml")
 
 #  ------------------------------------------------------------------------
 
@@ -141,12 +149,12 @@ When prompted, navigate to the R/ folder within this parent directory and choose
 the calculate_wind_fetch.R file. This will source the code into R and 
 automatically calculate wind fetch for all the required sites.
 
+EASY!
+
 Once the calculations have completed, the raw data, along with a summary of wind 
 fetch for each site, will be output to separate CSV files within the CSV/ 
 directory. A KML file will be written and exported to the KML/ directory, and a
-figure will be output to the Figures/ directory.
-
-EASY!
+PNG plot will be output to the Figures/ directory.
 
 More information
 ----------------

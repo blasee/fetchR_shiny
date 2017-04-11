@@ -107,6 +107,9 @@ shinyServer(function(input, output) {
 
     validate(need(is(x, "SpatialPoints"),
                   "Please provide a '[Multi]Point' shapefile."))
+    
+    validate(need(length(x) < 101,
+                  "Please provide up to 100 sites to calculate."))
     list(x = x,
          dir_name = tail(strsplit(dir_name, "/")[[1]], 1))
   })
@@ -133,7 +136,8 @@ shinyServer(function(input, output) {
         point_layer = spTransform(point_layer,
                                   CRS(proj4string(poly_layer)))
 
-      # Make sure there are no points on land here...
+      validate(need(all(is.na(over(poly_layer, point_layer))),
+                    "At least one site location is on land"))
 
       plot(point_layer, col = "red")
       plot(poly_layer, add = TRUE, border = NA, col = "lightgrey")
@@ -148,23 +152,96 @@ shinyServer(function(input, output) {
     validate(need(all(input$n_dirs <= 20,
                       input$n_dirs > 0),
                   "Directions per quadrant: please choose a number between 1 and 20."))
-
-    withCallingHandlers({
-      html("text", "")
-      my_fetch = fetch(poly_layer,
-                       point_layer,
-                       max_dist = input$dist,
-                       n_directions = input$n_dirs,
-                       quiet = TRUE)
-      message("")
-    },
-    message = function(m){
-      emph_text = paste0("<strong>", m$message, "</strong>")
-      html(id = "text", html = emph_text)
+    
+    withProgress(message = "Calculating fetch", detail = "", value = 0, {
+      
+      if (any(grepl("^[Nn]ames{0,1}$", names(point_layer)))) {
+        name_col = grep("^[Nn]ames{0,1}$", names(point_layer))
+        site_names = as.character(data.frame(point_layer)[, name_col[[1]]])
+      } else {
+        site_names = paste("Site", seq_along(point_layer))
+      }
+      
+      which_proj = c(is.projected(poly_layer), is.projected(point_layer))
+      
+      if (all(which_proj) && !identicalCRS(poly_layer, point_layer)) {
+        point_layer = spTransform(point_layer, CRS(proj4string(poly_layer)))
+      }
+      
+      if (!which_proj[2]) {
+        point_layer = spTransform(point_layer, CRS(proj4string(poly_layer)))
+      }
+      
+      max_dist = input$dist * 1000
+      directions = head(seq(0, 360, by = 360 / (input$n_dirs * 4)), -1)
+      dirs = as.numeric(directions)
+      dirs_bin = findInterval(dirs, seq(45, 315, by = 90))
+      quadrant = rep("North", length(dirs))
+      quadrant[dirs_bin == 1] = "East"
+      quadrant[dirs_bin == 2] = "South"
+      quadrant[dirs_bin == 3] = "West"
+      directions = unlist(split(directions, directions < 90), use.names = FALSE)
+      fetch_list = vector("list", length(point_layer))
+      
+      inc = 1 / length(point_layer)
+      for (i in seq_along(point_layer)){
+        
+        d_bff = gBuffer(point_layer[i, ], width = max_dist, quadsegs = input$n_dirs)
+        fetch_ends = head(coordinates(d_bff@polygons[[1]]@Polygons[[1]]), 
+                          -1)
+        fetch_ends = fetch_ends[order(directions), ]
+        line_list = fetchR:::create_line_list(point_layer[i, ], fetch_ends)
+        fetch_sp_lines = fetchR:::create_sp_lines(line_list, sort(directions), 
+                                         poly_layer)
+        poly_layer_subset = poly_layer[which(!is.na(over(poly_layer, 
+                                                            fetch_sp_lines))), ]
+        if (length(poly_layer_subset) > 0) {
+          hit_land = !sapply(gIntersects(fetch_sp_lines, poly_layer_subset, 
+                                         byid = c(TRUE, FALSE), returnDense = FALSE), 
+                             is.null)
+          ints = gIntersection(fetch_sp_lines[hit_land], poly_layer_subset, 
+                               byid = c(TRUE, FALSE))
+          fetch_ends[hit_land, ] = t(sapply(ints@lines, function(x) {
+            coordinates(x)[[1]][1, ]
+          }))
+          line_list = fetchR:::create_line_list(point_layer[i, ], fetch_ends)
+          fetch_sp_lines = fetchR:::create_sp_lines(line_list, sort(directions), 
+                                           poly_layer)
+        }
+        fetch.df = data.frame(site = site_names[i], fetch = SpatialLinesLengths(fetch_sp_lines)/1000, 
+                              direction = sort(directions), quadrant = factor(quadrant, 
+                                                                              levels = c("North", "East", "South", "West")))
+        fetch_list[[i]] = SpatialLinesDataFrame(fetch_sp_lines, 
+                                                fetch.df)
+        
+        incProgress(inc, "Calculating fetch", paste0("Finished ", site_names[i], 
+                                                     " (", round(i / length(site_names) * 100), "%)"))
+      }
+      
+      my_fetch = new("Fetch", fetch_list, names = site_names, 
+                     max_dist = max_dist / 1000)
+      
+      setProgress(1)
+      
+      list(my_fetch = my_fetch,
+           my_fetch_latlon = spTransform(my_fetch, CRS("+init=epsg:4326")))
     })
 
-    list(my_fetch = my_fetch,
-         my_fetch_latlon = spTransform(my_fetch, CRS("+init=epsg:4326")))
+    # withCallingHandlers({
+    #   html("text", "")
+    #   my_fetch = fetch(poly_layer,
+    #                    point_layer,
+    #                    max_dist = input$dist,
+    #                    n_directions = input$n_dirs,
+    #                    quiet = TRUE)
+    #   message("")
+    # },
+    # message = function(m){
+    #   emph_text = paste0("<strong>", m$message, "</strong>")
+    #   html(id = "text", html = emph_text)
+    # })
+
+    
   })
 
   output$fetch_plot = renderPlot({

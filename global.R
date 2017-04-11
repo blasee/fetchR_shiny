@@ -3,6 +3,7 @@ library(shinyjs)
 library(fetchR)
 library(purrr)
 library(rgdal)
+library(rgeos)
 library(plotKML)
 
 create_zip = function(poly_layer, point_layer, 

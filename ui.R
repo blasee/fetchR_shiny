@@ -63,11 +63,11 @@ shinyUI(fluidPage(
                    a("fetchR", href = "https://cran.r-project.org/package=fetchR"),
                    "R package. Simply upload your polygon shapefiles (representing the coastlines etc.), and your points shapefiles (indicating where fetch is to be calculated), and then calculate the fetch! See the", a("README", href = "https://github.com/blasee/fetchR_shiny"), "for more details and a reproducible example using this application."),
 
-                 p("This", strong("Home"), "tab plots the extent of the polygon shapefile, and the locations at which the wind fetch are to be calculated, once the shapefiles have been uploaded successfully."),
-                 p("The", strong("Plot"), "tab shows a plot of the vectors that were used in calculating the fetch for each direction, at each site."),
-                 p("The", strong("Summary"), "tab gives a summary of the wind fetch for each location, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."),
-                 p("The", strong("Distances"), "tab contains the fetch length for each vector that has gone into the fetch calculations, along with the latitude and longitude coordinates."),
-                 p(strong("Please"), "don't forget to", a("cite the 'fetchR' package", href = "https://github.com/blasee/fetchR#citation"), "in publications.")
+                 # p("This", strong("Home"), "tab plots the extent of the polygon shapefile, and the locations at which the wind fetch are to be calculated, once the shapefiles have been uploaded successfully."),
+                 # p("The", strong("Plot"), "tab shows a plot of the vectors that were used in calculating the fetch for each direction, at each site."),
+                 # p("The", strong("Summary"), "tab gives a summary of the wind fetch for each location, including the average fetch for each quadrant. The more angles used per quadrant will lead to better estimates of fetch, although the computation time will increase."),
+                 # p("The", strong("Distances"), "tab contains the fetch length for each vector that has gone into the fetch calculations, along with the latitude and longitude coordinates."),
+                 p(strong("Please"), "don't forget to", a("cite the fetchR package", href = "https://github.com/blasee/fetchR#citation"), "in publications.")
                  ),
         tabPanel("Plot",
                  plotOutput("fetch_plot",

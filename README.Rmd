@@ -139,9 +139,8 @@ shiny::runApp("fetchR_shiny")
 
 ## Citation
 
-```{r, echo = FALSE}
-citation("fetchR")
-```
+Please don't forget to [cite **fetchR**](https://github.com/blasee/fetchR#citation) in
+publications.
 
 
 [^1]: This requires a (free) [registration to the LINZ Data Service](https://data.linz.govt.nz/accounts/register/) and acceptance of the [terms of conditions](https://data.linz.govt.nz/terms-of-use/) and [privacy policy](https://data.linz.govt.nz/privacy-policy/). The data sourced from

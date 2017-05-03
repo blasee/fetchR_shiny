@@ -118,20 +118,6 @@ shiny::runApp("fetchR_shiny")
 Citation
 --------
 
-    ## 
-    ## To cite package 'fetchR' in publications use:
-    ## 
-    ##   Blake Seers (2017). fetchR: Calculate Wind Fetch. R package
-    ##   version 2.1-0. https://CRAN.R-project.org/package=fetchR
-    ## 
-    ## A BibTeX entry for LaTeX users is
-    ## 
-    ##   @Manual{,
-    ##     title = {fetchR: Calculate Wind Fetch},
-    ##     author = {Blake Seers},
-    ##     year = {2017},
-    ##     note = {R package version 2.1-0},
-    ##     url = {https://CRAN.R-project.org/package=fetchR},
-    ##   }
+Please don't forget to [cite **fetchR**](https://github.com/blasee/fetchR#citation) in publications.
 
 [1] This requires a (free) [registration to the LINZ Data Service](https://data.linz.govt.nz/accounts/register/) and acceptance of the [terms of conditions](https://data.linz.govt.nz/terms-of-use/) and [privacy policy](https://data.linz.govt.nz/privacy-policy/). The data sourced from Land Information New Zealand has not been adapted and is protected under CC-By Land Information New Zealand.

@@ -1,17 +1,35 @@
 Wind fetch
 ----------
 
-Wind fetch is an important measurement in coastal applications. It provides a measurement for the unobstructed length of water over which wind from a certain direction can blow over. The higher the wind fetch from a certain direction, the more energy is imparted onto the surface of the water resulting in a larger sea state. Therefore, the larger the fetch, the larger the exposure to wind and the more likely the site experiences larger sea states.
+Wind fetch is an important measurement in coastal applications. It
+provides a measurement for the unobstructed length of water over which
+wind from a certain direction can blow over. The higher the wind fetch
+from a certain direction, the more energy is imparted onto the surface
+of the water resulting in a larger sea state. Therefore, the larger the
+fetch, the larger the exposure to wind and the more likely the site
+experiences larger sea states.
 
 Simplifying fetch calculations
 ------------------------------
 
-Averaging the wind fetch for numerous directions at the same location is a reasonable measure of the overall wind exposure. This process of calculating wind fetch can be extremely time-consuming and tedious, particularly if a large number of fetch vectors are required at many locations. The [**fetchR**](https://github.com/blasee/fetchR) package is designed to calculate fetch lengths at locations anywhere on Earth, using **R**. This application uses the **fetchR** package but allows users to calculate fetch *without* **R**.
+Averaging the wind fetch for numerous directions at the same location is
+a reasonable measure of the overall wind exposure. This process of
+calculating wind fetch can be extremely time-consuming and tedious,
+particularly if a large number of fetch vectors are required at many
+locations. The [**fetchR**](https://github.com/blasee/fetchR) package is
+designed to calculate fetch lengths at locations anywhere on Earth,
+using **R**. This application uses the **fetchR** package but allows
+users to calculate fetch *without* **R**.
 
 How to use this application
 ---------------------------
 
-This [**fetchR**](https://github.com/blasee/fetchR) application requires two shapefiles; one for the coastlines and other boundaries, and one for the locations at which to calculate wind fetch. The following example details the steps required for calculating fetch with a reproducible example using data from the [Land Information New Zealand (LINZ) Data Service](https://data.linz.govt.nz/)[1].
+This [**fetchR**](https://github.com/blasee/fetchR) application requires
+two shapefiles; one for the coastlines and other boundaries, and one for
+the locations at which to calculate wind fetch. The following example
+details the steps required for calculating fetch with a reproducible
+example using data from the [Land Information New Zealand (LINZ) Data
+Service](https://data.linz.govt.nz/)[1].
 
 ### 1) Upload a polygon shapefile to the application
 
@@ -20,7 +38,12 @@ This shapefile must:
 -   be a Polygons ESRI shapefile, and;
 -   have a valid map projection
 
-As an example, download the [high resolution New Zealand coastlines and islands polygons shapefile](https://data.linz.govt.nz/layer/1153-nz-coastlines-and-islands-polygons-topo-150k/) as a GIS shapefile with the NZGD2000 / New Zealand Transverse Mercator 2000 (EPSG:2193) map projection. Once the contents have been unzipped, the files can then be uploaded to the web application.
+As an example, download the [high resolution New Zealand coastlines and
+islands polygons
+shapefile](https://data.linz.govt.nz/layer/1153-nz-coastlines-and-islands-polygons-topo-150k/)
+as a GIS shapefile with the NZGD2000 / New Zealand Transverse Mercator
+2000 (EPSG:2193) map projection. Once the contents have been unzipped,
+the files can then be uploaded to the web application.
 
 ![](./figures/upload_poly.png)
 
@@ -30,11 +53,14 @@ This shapefile must:
 
 -   be a Point (or MultiPoint) ESRI shapefile
 
-Every point represents a location at which the wind fetch will be calculated. This shapefile can be created from any GIS software, or directly within **R**.
+Every point represents a location at which the wind fetch will be
+calculated. This shapefile can be created from any GIS software, or
+directly within **R**.
 
 #### Create an ESRI shapefile in **R**
 
-As a example, create an ESRI Point shapefile in **R** for three locations around coastal New Zealand.
+As a example, create an ESRI Point shapefile in **R** for three
+locations around coastal New Zealand.
 
 ``` r
 # This example requires the rgdal package to be loaded
@@ -58,7 +84,10 @@ fetch_locs = SpatialPointsDataFrame(fetch.df[, 1:2],
                                     proj4string = CRS("+init=epsg:4326"))
 ```
 
-It is important to include a 'name' or 'Name' column in the data frame that gives the names for each of the locations. If there is no such column in the data within the shapefile, then the web application will not return meaningful names.
+It is important to include a ‘name’ or ‘Name’ column in the data frame
+that gives the names for each of the locations. If there is no such
+column in the data within the shapefile, then the web application will
+not return meaningful names.
 
 ``` r
 writeOGR(fetch_locs, "NZ_locations", "fetch_locations", "ESRI Shapefile")
@@ -70,25 +99,39 @@ These files can now be uploaded to the web application.
 
 ##### Note
 
-While the polygon layer requires a map projection, this is not a requirement for the point layer. If the point layer is not projected, it is automatically transformed to have the same map projection as the polygon layer before any wind fetch calculations take place.
+While the polygon layer requires a map projection, this is not a
+requirement for the point layer. If the point layer is not projected, it
+is automatically transformed to have the same map projection as the
+polygon layer before any wind fetch calculations take place.
 
 ### 3) Set maximum distance and number of directions
 
-Set the required maximum distance (km) and number of equiangular directions to calculate per quadrant (i.e. per 90 degrees). The default is to calculate the wind fetch for 9 directions per 90 degrees, or; one fetch vector for every 10 degrees of angular separation.
+Set the required maximum distance (km) and number of equiangular
+directions to calculate per quadrant (i.e. per 90 degrees). The default
+is to calculate the wind fetch for 9 directions per 90 degrees, or; one
+fetch vector for every 10 degrees of angular separation.
 
 ### 4) Calculate fetch!
 
 Finally, calculate fetch!
 
-Navigate through the various tabs to see the fetch vectors, a summary of the wind exposure, and a table containing the raw data (in longitude / latitude coordinates). Once the calculations are completed, the web application allows the user to export the raw data as a CSV file, download a KML, or reproduce the results with a custom **R** file.
+Navigate through the various tabs to see the fetch vectors, a summary of
+the wind exposure, and a table containing the raw data (in longitude /
+latitude coordinates). Once the calculations are completed, the web
+application allows the user to export the raw data as a CSV file,
+download a KML, or reproduce the results with a custom **R** file.
 
 #### Download a project directory
 
-If the custom **R** file is chosen for download, the web application creates a project directory (ZIP) with the required files (including the shapefiles), so that the custom R script can be sourced and run without any modifications to the code.
+If the custom **R** file is chosen for download, the web application
+creates a project directory (ZIP) with the required files (including the
+shapefiles), so that the custom R script can be sourced and run without
+any modifications to the code.
 
 ![](./figures/project_directory.png)
 
-To reproduce the calculations locally, unzip the contents of the directory and `source` the `calculate_fetch.R` **R** file:
+To reproduce the calculations locally, unzip the contents of the
+directory and `source` the `calculate_fetch.R` **R** file:
 
 ``` r
 if (interactive())
@@ -96,11 +139,14 @@ if (interactive())
   source(file.choose(), chdir = TRUE)
 ```
 
-This will automatically run the `fetch` function and output all the relevant CSV, KML and PNG files into their respective directories. See the `README` file in the parent directory for more information.
+This will automatically run the `fetch` function and output all the
+relevant CSV, KML and PNG files into their respective directories. See
+the `README` file in the parent directory for more information.
 
 ### Deploy this application locally
 
-This application can be deployed locally by installing the **shiny** package, and using the `runGitHub()` function:
+This application can be deployed locally by installing the **shiny**
+package, and using the `runGitHub()` function:
 
 ``` r
 if (!require('shiny')) 
@@ -109,7 +155,8 @@ if (!require('shiny'))
 shiny::runGitHub("blasee/fetchR_shiny")
 ```
 
-Or you can clone or download the GitHub repository, and use the `runApp()` function:
+Or you can clone or download the GitHub repository, and use the
+`runApp()` function:
 
 ``` r
 shiny::runApp("fetchR_shiny")
@@ -118,6 +165,12 @@ shiny::runApp("fetchR_shiny")
 Citation
 --------
 
-Please don't forget to [cite **fetchR**](https://github.com/blasee/fetchR#citation) in publications.
+Please don’t forget to [cite
+**fetchR**](https://github.com/blasee/fetchR#citation) in publications.
 
-[1] This requires a (free) [registration to the LINZ Data Service](https://data.linz.govt.nz/accounts/register/) and acceptance of the [terms of conditions](https://data.linz.govt.nz/terms-of-use/) and [privacy policy](https://data.linz.govt.nz/privacy-policy/). The data sourced from Land Information New Zealand has not been adapted and is protected under CC-By Land Information New Zealand.
+[1] This requires a (free) [registration to the LINZ Data
+Service](https://data.linz.govt.nz/accounts/register/) and acceptance of
+the [terms of conditions](https://data.linz.govt.nz/terms-of-use/) and
+[privacy policy](https://data.linz.govt.nz/privacy-policy/). The data
+sourced from Land Information New Zealand has not been adapted and is
+protected under CC-By Land Information New Zealand.

@@ -260,7 +260,7 @@ shinyServer(function(input, output) {
   },
   rownames = TRUE, colnames = TRUE)
 
-  output$distances = renderDataTable({
+  output$distances = DT::renderDataTable({
     poly_layer = polyShapeInput()$x
     point_layer = pointShapeInput()$x
 
@@ -269,7 +269,7 @@ shinyServer(function(input, output) {
       return(NULL)
 
     calc_fetch.df = as(calc_fetch()$my_fetch_latlon, "data.frame")
-    class(calc_fetch.df$direction) = "integer"
+    class(calc_fetch.df$direction) = "numeric"
     calc_fetch.df
   })
 

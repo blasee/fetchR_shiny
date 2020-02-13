@@ -1,4 +1,5 @@
 library(shiny)
+library(DT)
 library(shinyjs)
 library(fetchR)
 library(purrr)

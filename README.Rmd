@@ -4,6 +4,12 @@ output:
     variant: markdown_github
 ---
 
+# fetchR has been superceded
+
+This application now uses the latest code from the [**windfetch** R package](https://github.com/blasee/windfetch) and is available online at https://shiny.csiro.au/windfetch/. Check out the [windfetch shiny application GitHub repo](https://github.com/blasee/windfetch_shiny) if you want to access the code.
+
+
+
 ## Wind fetch
 
 Wind fetch is an important measurement in coastal applications. It provides a measurement for the unobstructed length of water over which wind from a certain direction can blow over. The higher the wind fetch from a certain direction, the more energy is imparted onto the surface of the water resulting in a larger sea state. Therefore, the larger the fetch, the larger the exposure to wind and the more likely the site experiences larger sea states.

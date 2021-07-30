@@ -1,5 +1,12 @@
-Wind fetch
-----------
+# fetchR has been superceded
+
+This application now uses the latest code from the [**windfetch** R
+package](https://github.com/blasee/windfetch) and is available online at
+<https://shiny.csiro.au/windfetch/>. Check out the [windfetch shiny
+application GitHub repo](https://github.com/blasee/windfetch_shiny) if
+you want to access the code.
+
+## Wind fetch
 
 Wind fetch is an important measurement in coastal applications. It
 provides a measurement for the unobstructed length of water over which
@@ -9,8 +16,7 @@ of the water resulting in a larger sea state. Therefore, the larger the
 fetch, the larger the exposure to wind and the more likely the site
 experiences larger sea states.
 
-Simplifying fetch calculations
-------------------------------
+## Simplifying fetch calculations
 
 Averaging the wind fetch for numerous directions at the same location is
 a reasonable measure of the overall wind exposure. This process of
@@ -21,8 +27,7 @@ designed to calculate fetch lengths at locations anywhere on Earth,
 using **R**. This application uses the **fetchR** package but allows
 users to calculate fetch *without* **R**.
 
-How to use this application
----------------------------
+## How to use this application
 
 This [**fetchR**](https://github.com/blasee/fetchR) application requires
 two shapefiles; one for the coastlines and other boundaries, and one for
@@ -162,8 +167,7 @@ Or you can clone or download the GitHub repository, and use the
 shiny::runApp("fetchR_shiny")
 ```
 
-Citation
---------
+## Citation
 
 Please don’t forget to [cite
 **fetchR**](https://github.com/blasee/fetchR#citation) in publications.
